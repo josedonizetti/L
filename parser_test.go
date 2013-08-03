@@ -7,24 +7,35 @@ func TestParseSimpleAssignStm(t *testing.T) {
   ast := Parse("a := 1")
   checkType(ast, AssignStm{}, t)
   stm := ast.(AssignStm)
-  checkType(stm.exp, NumExp{}, t)
   checkValue(stm.id, "a", t)
+  checkType(stm.exp, NumExp{}, t)
+  numExp := stm.exp.(NumExp)
+  checkValue(numExp.val, 1, t)
 }
 
 func TestParseAssignAnOpExp(t *testing.T) {
   ast := Parse("a := 1 + 1")
   checkType(ast, AssignStm{}, t)
   stm := ast.(AssignStm)
-  checkType(stm.exp, OpExp{}, t)
   checkValue(stm.id, "a", t)
+  checkType(stm.exp, OpExp{}, t)
+  opExp := stm.exp.(OpExp)
+  rightExp := opExp.right.(NumExp)
+  leftExp := opExp.right.(NumExp)
+
+  checkValue(opExp.operation, "+", t)
+  checkValue(rightExp.val, 1, t)
+  checkValue(leftExp.val, 1, t)
 }
 
 func TestParseAssignAnIdExp(t *testing.T) {
   ast := Parse("a := b")
   checkType(ast, AssignStm{}, t)
   stm := ast.(AssignStm)
-  checkType(stm.exp, IdExp{}, t)
   checkValue(stm.id, "a", t)
+  checkType(stm.exp, IdExp{}, t)
+  idExp := stm.exp.(IdExp)
+  checkValue(idExp.id, "b", t)
 }
 
 func checkType(a, b interface{}, t *testing.T) {
